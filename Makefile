@@ -5,9 +5,9 @@ else ifeq ($(MODE), aidbox)
 compose = docker compose -f compose.aidbox.yaml
 endif
 inferno = run inferno
-rm_generated = rm -rf lib/ph_core_test_kit/generated/
-ber_generate = bundle exec rake ph_core_test_kit:generate
-lint_generated = rubocop -A lib/ph_core_test_kit/
+rm_generated = rm -rf lib/gpccmp_test_kit/generated/
+ber_generate = bundle exec rake gpccmp_test_kit:generate
+lint_generated = rubocop -A lib/gpccmp_test_kit/
 
 .PHONY: setup generate summary new_release tests run pull build up stop down rubocop migrate clean_generated uploadfig_generate_local
 
@@ -53,7 +53,7 @@ migrate:
 
 clean_generated:
 	sudo $(rm_generated)
-	git checkout lib/ph_core_test_kit/generated/
+	git checkout lib/gpccmp_test_kit/generated/
 
 start_from_zero: stop down setup run
 
