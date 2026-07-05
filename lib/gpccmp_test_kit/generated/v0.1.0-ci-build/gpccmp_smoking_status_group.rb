@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'inferno_suite_generator/core/ig_demodata'
+require_relative 'gpccmp_smoking_status/gpccmp_smoking_status_patient_code_search_test'
 require_relative 'gpccmp_smoking_status/gpccmp_smoking_status_patient_search_test'
 require_relative 'gpccmp_smoking_status/gpccmp_smoking_status_code_search_test'
-require_relative 'gpccmp_smoking_status/gpccmp_smoking_status_patient_code_search_test'
 require_relative 'gpccmp_smoking_status/gpccmp_smoking_status_validation_test'
 require_relative 'gpccmp_smoking_status/gpccmp_smoking_status_must_support_test'
 require_relative 'gpccmp_smoking_status/gpccmp_smoking_status_reference_resolution_test'
@@ -76,9 +76,9 @@ read succeeds.
                                                                           ))
       end
 
+      test from: :gpccmp_v010_ci_build_gpccmp_smoking_status_patient_code_search_test
       test from: :gpccmp_v010_ci_build_gpccmp_smoking_status_patient_search_test
       test from: :gpccmp_v010_ci_build_gpccmp_smoking_status_code_search_test
-      test from: :gpccmp_v010_ci_build_gpccmp_smoking_status_patient_code_search_test
       test from: :gpccmp_v010_ci_build_gpccmp_smoking_status_validation_test
       test from: :gpccmp_v010_ci_build_gpccmp_smoking_status_must_support_test
       test from: :gpccmp_v010_ci_build_gpccmp_smoking_status_reference_resolution_test

@@ -10,6 +10,12 @@ module GPCCMPTestKit
       title '(SHALL) Server returns correct Patient resource from Patient read interaction'
       description 'A server SHALL support the Patient read interaction.'
 
+      input :patient_ids,
+            title: 'Patient IDs',
+            description: 'Comma separated list of patient IDs that in sum contain all MUST SUPPORT elements',
+            default: 'pat-sf, baby-smith-john',
+            optional: true
+
       id :gpccmp_v010_ci_build_patient_read_test
 
       def self.demodata

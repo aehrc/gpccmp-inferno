@@ -15,20 +15,20 @@
   :expectation: SHALL
 :operations: []
 :searches:
-- :names:
-  - patient
-  :expectation: MAY
-  :names_not_must_support_or_mandatory: []
-  :must_support_or_mandatory: true
-- :names:
-  - code
-  :expectation: MAY
-  :names_not_must_support_or_mandatory: []
-  :must_support_or_mandatory: true
 - :expectation: SHALL
   :names:
   - patient
   - code
+  :names_not_must_support_or_mandatory: []
+  :must_support_or_mandatory: true
+- :names:
+  - patient
+  :expectation: MAY
+  :names_not_must_support_or_mandatory: []
+  :must_support_or_mandatory: true
+- :names:
+  - code
+  :expectation: MAY
   :names_not_must_support_or_mandatory: []
   :must_support_or_mandatory: true
 :search_definitions:
@@ -192,12 +192,12 @@
   - http://hl7.org/fhir/StructureDefinition/MolecularSequence|4.0.1
   - http://hl7.org/fhir/StructureDefinition/vitalsigns|4.0.1
 :tests:
+- :id: gpccmp_v010_ci_build_gpccmp_oxygen_saturation_patient_code_search_test
+  :file_name: gpccmp_oxygen_saturation_patient_code_search_test.rb
 - :id: gpccmp_v010_ci_build_gpccmp_oxygen_saturation_patient_search_test
   :file_name: gpccmp_oxygen_saturation_patient_search_test.rb
 - :id: gpccmp_v010_ci_build_gpccmp_oxygen_saturation_code_search_test
   :file_name: gpccmp_oxygen_saturation_code_search_test.rb
-- :id: gpccmp_v010_ci_build_gpccmp_oxygen_saturation_patient_code_search_test
-  :file_name: gpccmp_oxygen_saturation_patient_code_search_test.rb
 - :id: gpccmp_v010_ci_build_gpccmp_oxygen_saturation_validation_test
   :file_name: gpccmp_oxygen_saturation_validation_test.rb
 - :id: gpccmp_v010_ci_build_gpccmp_oxygen_saturation_must_support_test

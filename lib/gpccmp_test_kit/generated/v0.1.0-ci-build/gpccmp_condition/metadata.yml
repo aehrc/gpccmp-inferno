@@ -15,20 +15,20 @@
   :expectation: SHALL
 :operations: []
 :searches:
-- :names:
-  - patient
-  :expectation: MAY
-  :names_not_must_support_or_mandatory: []
-  :must_support_or_mandatory: true
-- :names:
-  - category
-  :expectation: MAY
-  :names_not_must_support_or_mandatory: []
-  :must_support_or_mandatory: true
 - :expectation: SHALL
   :names:
   - patient
   - category
+  :names_not_must_support_or_mandatory: []
+  :must_support_or_mandatory: true
+- :names:
+  - patient
+  :expectation: MAY
+  :names_not_must_support_or_mandatory: []
+  :must_support_or_mandatory: true
+- :names:
+  - category
+  :expectation: MAY
   :names_not_must_support_or_mandatory: []
   :must_support_or_mandatory: true
 :search_definitions:
@@ -141,12 +141,12 @@
   :profiles:
   - http://hl7.org/fhir/StructureDefinition/Resource|4.0.1
 :tests:
+- :id: gpccmp_v010_ci_build_gpccmp_condition_patient_category_search_test
+  :file_name: gpccmp_condition_patient_category_search_test.rb
 - :id: gpccmp_v010_ci_build_gpccmp_condition_patient_search_test
   :file_name: gpccmp_condition_patient_search_test.rb
 - :id: gpccmp_v010_ci_build_gpccmp_condition_category_search_test
   :file_name: gpccmp_condition_category_search_test.rb
-- :id: gpccmp_v010_ci_build_gpccmp_condition_patient_category_search_test
-  :file_name: gpccmp_condition_patient_category_search_test.rb
 - :id: gpccmp_v010_ci_build_gpccmp_condition_validation_test
   :file_name: gpccmp_condition_validation_test.rb
 - :id: gpccmp_v010_ci_build_gpccmp_condition_must_support_test

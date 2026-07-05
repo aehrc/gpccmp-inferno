@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'inferno_suite_generator/core/ig_demodata'
+require_relative 'gpccmp_pulse_rhythm/gpccmp_pulse_rhythm_patient_code_search_test'
 require_relative 'gpccmp_pulse_rhythm/gpccmp_pulse_rhythm_patient_search_test'
 require_relative 'gpccmp_pulse_rhythm/gpccmp_pulse_rhythm_code_search_test'
-require_relative 'gpccmp_pulse_rhythm/gpccmp_pulse_rhythm_patient_code_search_test'
 require_relative 'gpccmp_pulse_rhythm/gpccmp_pulse_rhythm_validation_test'
 require_relative 'gpccmp_pulse_rhythm/gpccmp_pulse_rhythm_must_support_test'
 require_relative 'gpccmp_pulse_rhythm/gpccmp_pulse_rhythm_reference_resolution_test'
@@ -76,9 +76,9 @@ read succeeds.
                                                                           ))
       end
 
+      test from: :gpccmp_v010_ci_build_gpccmp_pulse_rhythm_patient_code_search_test
       test from: :gpccmp_v010_ci_build_gpccmp_pulse_rhythm_patient_search_test
       test from: :gpccmp_v010_ci_build_gpccmp_pulse_rhythm_code_search_test
-      test from: :gpccmp_v010_ci_build_gpccmp_pulse_rhythm_patient_code_search_test
       test from: :gpccmp_v010_ci_build_gpccmp_pulse_rhythm_validation_test
       test from: :gpccmp_v010_ci_build_gpccmp_pulse_rhythm_must_support_test
       test from: :gpccmp_v010_ci_build_gpccmp_pulse_rhythm_reference_resolution_test

@@ -10,6 +10,12 @@ module GPCCMPTestKit
       title '(SHALL) Server returns correct Encounter resource from Encounter read interaction'
       description 'A server SHALL support the Encounter read interaction.'
 
+      input :encounter_ids,
+            title: 'Encounter IDs',
+            description: 'Comma separated list of encounter IDs that in sum contain all MUST SUPPORT elements',
+            default: 'health-check-pat-sf',
+            optional: true
+
       id :gpccmp_v010_ci_build_encounter_read_test
 
       def self.demodata

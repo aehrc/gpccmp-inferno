@@ -133,20 +133,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - category
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - category
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - category
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -654,20 +654,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -851,20 +851,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -1048,20 +1048,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -1244,20 +1244,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -1439,20 +1439,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -1592,20 +1592,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -1785,20 +1785,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -2019,20 +2019,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:
@@ -2161,20 +2161,20 @@
     :expectation: SHALL
   :operations: []
   :searches:
-  - :names:
-    - patient
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
-  - :names:
-    - code
-    :expectation: MAY
-    :names_not_must_support_or_mandatory: []
-    :must_support_or_mandatory: true
   - :expectation: SHALL
     :names:
     - patient
     - code
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - patient
+    :expectation: MAY
+    :names_not_must_support_or_mandatory: []
+    :must_support_or_mandatory: true
+  - :names:
+    - code
+    :expectation: MAY
     :names_not_must_support_or_mandatory: []
     :must_support_or_mandatory: true
   :search_definitions:

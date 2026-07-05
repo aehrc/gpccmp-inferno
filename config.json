@@ -33,11 +33,13 @@
     ]
   },
   "constants": {
-    "default_fhir_server": "",
-    "read_ids.patient": "",
-    "read_ids.practitioner": "",
-    "read_ids.organization": "",
-    "read_ids.practitioner_role": ""
+    "default_fhir_server": "https://proxy.smartforms.io/fhir",
+    "read_ids.patient": "pat-sf, baby-smith-john",
+    "read_ids.encounter": "health-check-pat-sf",
+    "read_ids.location": "bobrester-medical-center",
+    "read_ids.medication": "4active-ingredients",
+    "read_ids.practitioner": "primary-peter",
+    "read_ids.practitioner_role": "retail-pharmacist"
   },
   "configs": {
     "generic": {
@@ -51,6 +53,32 @@
         "_sort",
         "_include"
       ]
+    },
+    "resources": {
+      "Patient": {
+        "first_class_profile": "read"
+      },
+      "Encounter": {
+        "first_class_profile": "read"
+      },
+      "Location": {
+        "first_class_profile": "read"
+      },
+      "Medication": {
+        "first_class_profile": "read"
+      },
+      "Practitioner": {
+        "first_class_profile": "read"
+      },
+      "PractitionerRole": {
+        "first_class_profile": "read"
+      },
+      "Observation": {
+        "forced_initial_search": ["patient", "code"]
+      },
+      "Condition": {
+        "forced_initial_search": ["patient", "category"]
+      }
     }
   }
 }
