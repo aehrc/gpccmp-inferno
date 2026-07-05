@@ -20,5 +20,3 @@
 node_modules
 .env
 package_archive_bundle.json
-/resources/ig/*.tgz
-/lib/gpccmp_test_kit/igs/*.tgz
