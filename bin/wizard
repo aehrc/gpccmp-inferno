@@ -10,7 +10,7 @@ class InfernoWizard < Thor # rubocop:disable Metrics/ClassLength
 
   desc 'configure', 'Configure the Inferno suite template for your Implementation Guide'
   method_option :dry_run, type: :boolean, default: false, aliases: '-n',
-                           desc: 'Preview changes without writing any files'
+                          desc: 'Preview changes without writing any files'
   def configure
     say "\n=== Inferno Suite Generator Wizard ===", :cyan
     say "Configures all template placeholders for your Implementation Guide.\n"
@@ -31,7 +31,7 @@ class InfernoWizard < Thor # rubocop:disable Metrics/ClassLength
       say "\n✓ Done! Your Inferno suite has been configured.", :green
       say "\nNext steps:"
       say "  1. Place your IG package at lib/#{answers[:kit_name]}/igs/#{answers[:ig_version]}.tgz"
-      say "  2. Run: make generate"
+      say '  2. Run: make generate'
       say "  3. Update the require path in lib/#{answers[:kit_name]}.rb if needed"
     end
   end
@@ -59,7 +59,7 @@ class InfernoWizard < Thor # rubocop:disable Metrics/ClassLength
     answers[:ig_version_url] = prompt("IG version-specific URL\n" \
                                       "  (e.g. https://example.com/ig/#{answers[:ig_version]}/index.html):")
     answers[:ig_index_url]   = prompt("IG index URL (without version)\n" \
-                                      "  (e.g. https://example.com/ig/index.html):",
+                                      '  (e.g. https://example.com/ig/index.html):',
                                       default: derive_index_url(answers[:ig_version_url], answers[:ig_version]))
     answers[:ig_cs_url]      = prompt('CapabilityStatement URL:')
 
@@ -79,7 +79,7 @@ class InfernoWizard < Thor # rubocop:disable Metrics/ClassLength
 
     say "\n[4/5] Suite", :yellow
     answers[:suite_title]   = prompt('Suite title (short, e.g. "AU Core" — generator appends _test_kit):',
-                                    default: answers[:ig_name])
+                                     default: answers[:ig_name])
     answers[:tx_server_url] = prompt('Terminology server URL:', default: 'https://tx.fhir.org/r4')
 
     say "\n[5/5] Default Constants", :yellow
@@ -156,18 +156,18 @@ class InfernoWizard < Thor # rubocop:disable Metrics/ClassLength
     config = JSON.parse(File.read('config.json'))
 
     config['ig'].merge!(
-      'id'                   => answers[:ig_id],
-      'name'                 => answers[:ig_name],
-      'version'              => ig_version,
-      'link'                 => answers[:ig_version_url],
+      'id' => answers[:ig_id],
+      'name' => answers[:ig_name],
+      'version' => ig_version,
+      'link' => answers[:ig_version_url],
       'package_archive_path' => "lib/#{kit_name}/igs/#{ig_version}.tgz",
-      'cs_profile_url'       => answers[:ig_cs_url],
+      'cs_profile_url' => answers[:ig_cs_url],
       'cs_version_specific_url' => answers[:ig_cs_url]
     )
 
     config['suite'].merge!(
-      'title'        => answers[:suite_title],
-      'rewrite_igs'  => "/home/igs/#{ig_version}.tgz",
+      'title' => answers[:suite_title],
+      'rewrite_igs' => "/home/igs/#{ig_version}.tgz",
       'tx_server_url' => answers[:tx_server_url]
     )
 
@@ -184,10 +184,10 @@ class InfernoWizard < Thor # rubocop:disable Metrics/ClassLength
     end
 
     config['constants'] = {
-      'default_fhir_server'    => answers[:fhir_server],
-      'read_ids.patient'       => answers[:patient_id],
-      'read_ids.encounter'     => answers[:encounter_id],
-      'read_ids.practitioner'  => answers[:practitioner_id]
+      'default_fhir_server' => answers[:fhir_server],
+      'read_ids.patient' => answers[:patient_id],
+      'read_ids.encounter' => answers[:encounter_id],
+      'read_ids.practitioner' => answers[:practitioner_id]
     }
 
     # Remove the template example profile entry; real profiles must be added manually.
@@ -196,10 +196,10 @@ class InfernoWizard < Thor # rubocop:disable Metrics/ClassLength
     json_output = JSON.pretty_generate(config)
 
     if dry_run
-      say "  [dry-run] Would update config.json"
+      say '  [dry-run] Would update config.json'
     else
       File.write('config.json', json_output)
-      say "  ✓ Updated config.json"
+      say '  ✓ Updated config.json'
     end
   end
 

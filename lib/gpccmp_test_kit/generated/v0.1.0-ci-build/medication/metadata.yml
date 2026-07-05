@@ -1,0 +1,49 @@
+---
+:name: GPCCMPMedication
+:class_name: GpccmpmedicationSequence
+:version: v0.1.0-ci-build
+:reformatted_version: v010_ci_build
+:resource: Medication
+:profile_url: https://gpccmp.csiro.au/ig/StructureDefinition/GPCCMPMedication
+:profile_name: GP CCMP Medication
+:profile_version: 0.1.0
+:title: GP CCMP Medication
+:short_description: Verify support for the server capabilities required by the GP
+  CCMP Medication.
+:interactions:
+- :code: read
+  :expectation: SHALL
+:operations: []
+:searches: []
+:search_definitions: {}
+:include_params: []
+:revincludes: []
+:required_concepts: []
+:must_supports:
+  :extensions: []
+  :slices: []
+  :elements:
+  - :path: id
+  - :path: code
+:mandatory_elements:
+- Medication.code
+- Medication.ingredient.item[x]
+:bindings:
+- :type: code
+  :strength: required
+  :system: http://hl7.org/fhir/ValueSet/medication-status
+  :path: status
+:references:
+- :path: Medication.manufacturer
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/Organization|4.0.1
+:tests:
+- :id: gpccmp_v010_ci_build_medication_read_test
+  :file_name: medication_read_test.rb
+- :id: gpccmp_v010_ci_build_medication_validation_test
+  :file_name: medication_validation_test.rb
+- :id: gpccmp_v010_ci_build_medication_must_support_test
+  :file_name: medication_must_support_test.rb
+:id: gpccmp_v010_ci_build_medication
+:file_name: medication_group.rb
+:delayed_references: []

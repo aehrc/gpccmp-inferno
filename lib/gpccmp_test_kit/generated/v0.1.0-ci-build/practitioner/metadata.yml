@@ -1,0 +1,57 @@
+---
+:name: GPCCMPPractitioner
+:class_name: GpccmppractitionerSequence
+:version: v0.1.0-ci-build
+:reformatted_version: v010_ci_build
+:resource: Practitioner
+:profile_url: https://gpccmp.csiro.au/ig/StructureDefinition/GPCCMPPractitioner
+:profile_name: GP CCMP Practitioner
+:profile_version: 0.1.0
+:title: GP CCMP Practitioner
+:short_description: Verify support for the server capabilities required by the GP
+  CCMP Practitioner.
+:interactions:
+- :code: read
+  :expectation: SHALL
+:operations: []
+:searches: []
+:search_definitions: {}
+:include_params: []
+:revincludes: []
+:required_concepts: []
+:must_supports:
+  :extensions: []
+  :slices: []
+  :elements:
+  - :path: id
+  - :path: identifier
+  - :path: name
+  - :path: name.family
+  - :path: name.given
+:mandatory_elements:
+- Practitioner.name
+- Practitioner.name.family
+- Practitioner.qualification.code
+:bindings:
+- :type: code
+  :strength: required
+  :system: http://hl7.org/fhir/ValueSet/name-use
+  :path: name.use
+- :type: code
+  :strength: required
+  :system: http://hl7.org/fhir/ValueSet/administrative-gender
+  :path: gender
+:references:
+- :path: Practitioner.qualification.issuer
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/Organization|4.0.1
+:tests:
+- :id: gpccmp_v010_ci_build_practitioner_read_test
+  :file_name: practitioner_read_test.rb
+- :id: gpccmp_v010_ci_build_practitioner_validation_test
+  :file_name: practitioner_validation_test.rb
+- :id: gpccmp_v010_ci_build_practitioner_must_support_test
+  :file_name: practitioner_must_support_test.rb
+:id: gpccmp_v010_ci_build_practitioner
+:file_name: practitioner_group.rb
+:delayed_references: []

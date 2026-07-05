@@ -9,7 +9,7 @@
     "cs_version_specific_url": "https://gpccmp.csiro.au/ig/CapabilityStatement/csiro.fhir.au.gpccmp"
   },
   "suite": {
-    "title": "GP CCMP",
+    "title": "GPCCMP",
     "rewrite_igs": "/home/igs/0.1.0-ci-build.tgz",
     "extra_json_paths": [
       "search-params.json"

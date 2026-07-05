@@ -1,0 +1,137 @@
+---
+:name: GPCCMPEncounter
+:class_name: GpccmpencounterSequence
+:version: v0.1.0-ci-build
+:reformatted_version: v010_ci_build
+:resource: Encounter
+:profile_url: https://gpccmp.csiro.au/ig/StructureDefinition/GPCCMPEncounter
+:profile_name: GP CCMP Encounter
+:profile_version: 0.1.0
+:title: GP CCMP Encounter
+:short_description: Verify support for the server capabilities required by the GP
+  CCMP Encounter.
+:interactions:
+- :code: read
+  :expectation: SHALL
+:operations: []
+:searches: []
+:search_definitions: {}
+:include_params: []
+:revincludes: []
+:required_concepts: []
+:must_supports:
+  :extensions: []
+  :slices: []
+  :elements:
+  - :path: id
+  - :path: status
+  - :path: class
+  - :path: serviceType
+  - :path: subject
+    :types:
+    - Reference
+    :target_profiles:
+    - http://hl7.org.au/fhir/core/StructureDefinition/au-core-patient
+  - :path: participant
+  - :path: participant.type
+  - :path: participant.individual
+    :types:
+    - Reference
+  - :path: period
+  - :path: reasonCode
+  - :path: reasonReference
+    :types:
+    - Reference
+  - :path: location
+  - :path: location.location
+    :types:
+    - Reference
+    :target_profiles:
+    - http://hl7.org.au/fhir/core/StructureDefinition/au-core-location
+  - :path: serviceProvider
+    :types:
+    - Reference
+    :target_profiles:
+    - http://hl7.org.au/fhir/core/StructureDefinition/au-core-organization
+:mandatory_elements:
+- Encounter.status
+- Encounter.statusHistory.status
+- Encounter.statusHistory.period
+- Encounter.class
+- Encounter.classHistory.class
+- Encounter.classHistory.period
+- Encounter.subject
+- Encounter.diagnosis.condition
+- Encounter.location.location
+:bindings:
+- :type: code
+  :strength: required
+  :system: http://hl7.org/fhir/ValueSet/encounter-status
+  :path: status
+- :type: code
+  :strength: required
+  :system: http://hl7.org/fhir/ValueSet/encounter-status
+  :path: statusHistory.status
+- :type: code
+  :strength: required
+  :system: http://hl7.org/fhir/ValueSet/encounter-location-status
+  :path: location.status
+:references:
+- :path: Encounter.subject
+  :profiles:
+  - http://hl7.org.au/fhir/core/StructureDefinition/au-core-patient
+- :path: Encounter.episodeOfCare
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/EpisodeOfCare|4.0.1
+- :path: Encounter.basedOn
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/ServiceRequest|4.0.1
+- :path: Encounter.participant.individual
+  :profiles:
+  - http://hl7.org.au/fhir/core/StructureDefinition/au-core-practitioner
+  - http://hl7.org.au/fhir/core/StructureDefinition/au-core-practitionerrole
+  - http://hl7.org.au/fhir/core/StructureDefinition/au-core-relatedperson
+- :path: Encounter.appointment
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/Appointment|4.0.1
+- :path: Encounter.reasonReference
+  :profiles:
+  - http://hl7.org.au/fhir/core/StructureDefinition/au-core-condition
+  - http://hl7.org/fhir/StructureDefinition/Observation
+  - http://hl7.org.au/fhir/core/StructureDefinition/au-core-procedure
+- :path: Encounter.diagnosis.condition
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/Condition|4.0.1
+  - http://hl7.org/fhir/StructureDefinition/Procedure|4.0.1
+- :path: Encounter.account
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/Account|4.0.1
+- :path: Encounter.hospitalization.origin
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/Location|4.0.1
+  - http://hl7.org/fhir/StructureDefinition/Organization|4.0.1
+- :path: Encounter.hospitalization.destination
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/Location|4.0.1
+  - http://hl7.org/fhir/StructureDefinition/Organization|4.0.1
+- :path: Encounter.location.location
+  :profiles:
+  - http://hl7.org.au/fhir/core/StructureDefinition/au-core-location
+- :path: Encounter.serviceProvider
+  :profiles:
+  - http://hl7.org.au/fhir/core/StructureDefinition/au-core-organization
+- :path: Encounter.partOf
+  :profiles:
+  - http://hl7.org/fhir/StructureDefinition/Encounter|4.0.1
+:tests:
+- :id: gpccmp_v010_ci_build_encounter_read_test
+  :file_name: encounter_read_test.rb
+- :id: gpccmp_v010_ci_build_encounter_validation_test
+  :file_name: encounter_validation_test.rb
+- :id: gpccmp_v010_ci_build_encounter_must_support_test
+  :file_name: encounter_must_support_test.rb
+- :id: gpccmp_v010_ci_build_encounter_reference_resolution_test
+  :file_name: encounter_reference_resolution_test.rb
+:id: gpccmp_v010_ci_build_encounter
+:file_name: encounter_group.rb
+:delayed_references: []
