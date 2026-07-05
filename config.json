@@ -16,7 +16,14 @@
     ],
     "tx_server_url": "https://tx.fhir.org/r4",
     "extra_imports": [],
-    "outer_groups": [],
+    "outer_groups": [
+      {
+        "import_type": "relative",
+        "import_path": "../../outer_groups/teardown",
+        "group_position": "after",
+        "group_id": "teardown_group"
+      }
+    ],
     "links": [
       {
         "label": "Report Issue",
@@ -74,10 +81,16 @@
         "first_class_profile": "read"
       },
       "Observation": {
-        "forced_initial_search": ["patient", "code"]
+        "forced_initial_search": [
+          "patient",
+          "code"
+        ]
       },
       "Condition": {
-        "forced_initial_search": ["patient", "category"]
+        "forced_initial_search": [
+          "patient",
+          "category"
+        ]
       }
     }
   }

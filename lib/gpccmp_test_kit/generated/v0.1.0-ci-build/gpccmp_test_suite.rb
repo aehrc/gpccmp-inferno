@@ -4,6 +4,7 @@ require 'base64'
 require 'inferno/dsl/oauth_credentials'
 require 'inferno_suite_generator/utils/helpers'
 require_relative '../../version'
+require_relative '../../outer_groups/teardown'
 
 require_relative 'patient_group'
 require_relative 'allergy_intolerance_group'
@@ -148,6 +149,8 @@ module GPCCMPTestKit
         group from: :gpccmp_v010_ci_build_practitioner
 
         group from: :gpccmp_v010_ci_build_practitioner_role
+
+        group from: :teardown_group
       end
     end
   end
