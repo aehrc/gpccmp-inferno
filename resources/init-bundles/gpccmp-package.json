@@ -1,0 +1,29 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:AidboxMigration:gpccmp-ig",
+      "request": {
+        "method": "POST",
+        "url": "AidboxMigration",
+        "ifNoneExist": "id=gpccmp-ig"
+      },
+      "resource": {
+        "resourceType": "AidboxMigration",
+        "id": "gpccmp-ig",
+        "status": "to-run",
+        "action": "far-migration-fhir-package-install",
+        "params": {
+          "resourceType": "Parameters",
+          "parameter": [
+            {
+              "name": "package",
+              "valueString": "file:///resources/ig/0.1.0-ci-build.tgz"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

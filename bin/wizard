@@ -1,0 +1,307 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'thor'
+require 'json'
+require 'fileutils'
+
+class InfernoWizard < Thor # rubocop:disable Metrics/ClassLength
+  def self.exit_on_failure? = true
+
+  desc 'configure', 'Configure the Inferno suite template for your Implementation Guide'
+  method_option :dry_run, type: :boolean, default: false, aliases: '-n',
+                           desc: 'Preview changes without writing any files'
+  def configure
+    say "\n=== Inferno Suite Generator Wizard ===", :cyan
+    say "Configures all template placeholders for your Implementation Guide.\n"
+
+    answers = collect_answers
+    show_summary(answers)
+
+    unless yes?('Apply these changes?')
+      say 'Aborted.', :yellow
+      return
+    end
+
+    apply_changes(answers, dry_run: options[:dry_run])
+
+    if options[:dry_run]
+      say "\n(dry run — no files were modified)", :yellow
+    else
+      say "\n✓ Done! Your Inferno suite has been configured.", :green
+      say "\nNext steps:"
+      say "  1. Place your IG package at lib/#{answers[:kit_name]}/igs/#{answers[:ig_version]}.tgz"
+      say "  2. Run: make generate"
+      say "  3. Update the require path in lib/#{answers[:kit_name]}.rb if needed"
+    end
+  end
+
+  default_task :configure
+
+  private
+
+  # ── Input collection ──────────────────────────────────────────────────────
+
+  # Thor shows the default in the prompt but returns "" on empty input; this
+  # wrapper applies the default when the user presses Enter without typing.
+  def prompt(msg, default: nil, **opts)
+    raw = ask(msg, default: default, **opts)
+    raw.to_s.strip.empty? && !default.nil? ? default : raw.to_s.strip
+  end
+
+  def collect_answers
+    answers = {}
+
+    say "\n[1/5] Implementation Guide", :yellow
+    answers[:ig_id]          = prompt('IG package ID (e.g. hl7.fhir.au.core):')
+    answers[:ig_name]        = prompt('IG human-readable name (e.g. AU Core):')
+    answers[:ig_version]     = prompt('IG version:', default: '0.1.0')
+    answers[:ig_version_url] = prompt("IG version-specific URL\n" \
+                                      "  (e.g. https://example.com/ig/#{answers[:ig_version]}/index.html):")
+    answers[:ig_index_url]   = prompt("IG index URL (without version)\n" \
+                                      "  (e.g. https://example.com/ig/index.html):",
+                                      default: derive_index_url(answers[:ig_version_url], answers[:ig_version]))
+    answers[:ig_cs_url]      = prompt('CapabilityStatement URL:')
+
+    say "\n[2/5] Kit Identity", :yellow
+    default_kit_name      = derive_kit_name(answers[:ig_id])
+    answers[:kit_name]    = prompt('Kit gem name (snake_case):', default: default_kit_name)
+    answers[:module_name] = prompt('Ruby module name (CamelCase):',
+                                   default: to_module_name(answers[:kit_name]))
+
+    say "\n[3/5] Author & Gem Metadata", :yellow
+    answers[:author_name]  = prompt('Author name:')
+    answers[:author_email] = prompt('Author email:')
+    answers[:summary]      = prompt('Gem summary:',
+                                    default: "#{answers[:ig_name]} Inferno test kit")
+    answers[:homepage]     = prompt('GitHub repository URL:',
+                                    default: "https://github.com/example/#{answers[:kit_name].gsub('_', '-')}")
+
+    say "\n[4/5] Suite", :yellow
+    answers[:suite_title]   = prompt('Suite title (short, e.g. "AU Core" — generator appends _test_kit):',
+                                    default: answers[:ig_name])
+    answers[:tx_server_url] = prompt('Terminology server URL:', default: 'https://tx.fhir.org/r4')
+
+    say "\n[5/5] Default Constants", :yellow
+    answers[:fhir_server]     = prompt('Default FHIR server URL:', default: 'https://example.com/fhir')
+    answers[:patient_id]      = prompt('Default patient ID:', default: 'example-patient-id')
+    answers[:encounter_id]    = prompt('Default encounter ID:', default: 'example-encounter-id')
+    answers[:practitioner_id] = prompt('Default practitioner ID:', default: 'example-practitioner-id')
+
+    answers
+  end
+
+  def derive_kit_name(ig_id)
+    # hl7.fhir.au.core → au_core_test_kit
+    parts = ig_id.to_s.split('.').reject { |p| %w[hl7 fhir r4 r5 us].include?(p) }
+    return 'my_test_kit' if parts.empty?
+
+    "#{parts.join('_')}_test_kit"
+  end
+
+  def derive_index_url(version_url, version)
+    return '' if version_url.to_s.empty?
+
+    version_url.gsub("/#{version}/", '/').gsub("/#{version}", '')
+  end
+
+  def to_module_name(snake_case)
+    snake_case.split('_').map(&:capitalize).join
+  end
+
+  # ── Summary ───────────────────────────────────────────────────────────────
+
+  def show_summary(answers)
+    say "\n--- Configuration Summary ---", :cyan
+    rows = [
+      ['Kit gem name',     answers[:kit_name]],
+      ['Ruby module',      answers[:module_name]],
+      ['Author',           "#{answers[:author_name]} <#{answers[:author_email]}>"],
+      ['Summary',          answers[:summary]],
+      ['Homepage',         answers[:homepage]],
+      ['IG package ID',    answers[:ig_id]],
+      ['IG name',          answers[:ig_name]],
+      ['IG version',       answers[:ig_version]],
+      ['IG version URL',   answers[:ig_version_url]],
+      ['IG index URL',     answers[:ig_index_url]],
+      ['CS URL',           answers[:ig_cs_url]],
+      ['Suite title',      answers[:suite_title]],
+      ['TX server',        answers[:tx_server_url]],
+      ['FHIR server',      answers[:fhir_server]],
+      ['Patient ID',       answers[:patient_id]],
+      ['Encounter ID',     answers[:encounter_id]],
+      ['Practitioner ID',  answers[:practitioner_id]]
+    ]
+    width = rows.map { |k, _| k.length }.max
+    rows.each { |k, v| say "  #{k.ljust(width)}  #{v}" }
+    say ''
+  end
+
+  # ── Change application ────────────────────────────────────────────────────
+
+  def apply_changes(answers, dry_run: false)
+    update_config_json(answers, dry_run:)
+    update_text_files(answers, dry_run:)
+    rename_artifacts(answers[:kit_name], dry_run:)
+    create_suite_main_file(answers[:kit_name], dry_run:)
+  end
+
+  # ── config.json ───────────────────────────────────────────────────────────
+
+  def update_config_json(answers, dry_run: false)
+    kit_name   = answers[:kit_name]
+    ig_version = answers[:ig_version]
+    homepage   = answers[:homepage]
+
+    config = JSON.parse(File.read('config.json'))
+
+    config['ig'].merge!(
+      'id'                   => answers[:ig_id],
+      'name'                 => answers[:ig_name],
+      'version'              => ig_version,
+      'link'                 => answers[:ig_version_url],
+      'package_archive_path' => "lib/#{kit_name}/igs/#{ig_version}.tgz",
+      'cs_profile_url'       => answers[:ig_cs_url],
+      'cs_version_specific_url' => answers[:ig_cs_url]
+    )
+
+    config['suite'].merge!(
+      'title'        => answers[:suite_title],
+      'rewrite_igs'  => "/home/igs/#{ig_version}.tgz",
+      'tx_server_url' => answers[:tx_server_url]
+    )
+
+    config['suite']['outer_groups']&.each do |group|
+      group['group_id'] = group['group_id'].gsub('my_test_kit', kit_name)
+    end
+
+    config['suite']['links']&.each do |link|
+      case link['label']
+      when 'Report Issue'        then link['url'] = "#{homepage}/issues"
+      when 'Source Code'         then link['url'] = homepage
+      when 'Implementation Guide' then link['url'] = answers[:ig_index_url]
+      end
+    end
+
+    config['constants'] = {
+      'default_fhir_server'    => answers[:fhir_server],
+      'read_ids.patient'       => answers[:patient_id],
+      'read_ids.encounter'     => answers[:encounter_id],
+      'read_ids.practitioner'  => answers[:practitioner_id]
+    }
+
+    # Remove the template example profile entry; real profiles must be added manually.
+    config.dig('configs', 'profiles')&.delete('https://example.com/ig/StructureDefinition/MyProfile')
+
+    json_output = JSON.pretty_generate(config)
+
+    if dry_run
+      say "  [dry-run] Would update config.json"
+    else
+      File.write('config.json', json_output)
+      say "  ✓ Updated config.json"
+    end
+  end
+
+  # ── Text file substitutions ───────────────────────────────────────────────
+
+  TEXT_SUBSTITUTIONS = [
+    # More specific patterns first to avoid partial collisions
+    ['Author Name',                           :author_name],
+    ['author@example.com',                    :author_email],
+    ['Inferno test kit',                      :summary],
+    ['https://github.com/example/my-test-kit', :homepage],
+    ['MyTestKit',                             :module_name],
+    ['my_test_kit',                           :kit_name]
+  ].freeze
+
+  TEXT_FILES = %w[
+    Rakefile
+    Makefile
+    Gemfile.lock
+    Dockerfile
+    compose.yaml
+    my_test_kit.gemspec
+    lib/my_test_kit.rb
+    lib/my_test_kit/version.rb
+  ].freeze
+
+  def update_text_files(answers, dry_run: false)
+    ig_version = answers[:ig_version]
+
+    TEXT_FILES.each do |file|
+      next unless File.exist?(file)
+
+      original = File.read(file)
+      content  = original.dup
+
+      TEXT_SUBSTITUTIONS.each do |(placeholder, key)|
+        value = answers[key].to_s
+        next if value.empty?
+
+        content.gsub!(placeholder, value)
+      end
+
+      # Patch version and suite-file name in the main kit require
+      if file == 'lib/my_test_kit.rb'
+        content.gsub!('v0.1.0', "v#{ig_version}")
+        suite_name = answers[:kit_name].sub(/_kit$/, '_suite')
+        content.gsub!('my_test_suite', suite_name)
+      end
+
+      next if content == original
+
+      if dry_run
+        say "  [dry-run] Would update #{file}"
+      else
+        File.write(file, content)
+        say "  ✓ Updated #{file}"
+      end
+    end
+  end
+
+  # ── Suite main file ───────────────────────────────────────────────────────
+
+  def create_suite_main_file(kit_name, dry_run: false)
+    path = "lib/#{kit_name}.rb"
+
+    return if File.exist?(path)
+
+    if dry_run
+      say "  [dry-run] Would create #{path}"
+    else
+      File.write(path, "# frozen_string_literal: true\n")
+      say "  ✓ Created #{path}"
+    end
+  end
+
+  # ── File/directory renames ────────────────────────────────────────────────
+
+  def rename_artifacts(kit_name, dry_run: false)
+    return if kit_name == 'my_test_kit'
+
+    renames = [
+      ['lib/my_test_kit',         "lib/#{kit_name}"],
+      ['lib/my_test_kit.rb',      "lib/#{kit_name}.rb"],
+      ['my_test_kit.gemspec',     "#{kit_name}.gemspec"]
+    ]
+
+    renames.each do |src, dst|
+      next unless File.exist?(src) || Dir.exist?(src)
+
+      if File.exist?(dst) || Dir.exist?(dst)
+        say "  ⚠ Skipping rename #{src} → #{dst} (destination already exists)", :yellow
+        next
+      end
+
+      if dry_run
+        say "  [dry-run] Would rename #{src} → #{dst}"
+      else
+        FileUtils.mv(src, dst)
+        say "  ✓ Renamed #{src} → #{dst}"
+      end
+    end
+  end
+end
+
+InfernoWizard.start(ARGV)

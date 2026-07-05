@@ -1,0 +1,117 @@
+INFERNO SUITE TEMPLATE — PLACEHOLDER REFERENCE
+================================================
+Replace every placeholder below with your own values when creating a new test kit.
+
+----------------------------------------------------------------
+RUBY GEM / MODULE
+----------------------------------------------------------------
+Placeholder            : my_test_kit
+Represents             : gem name (snake_case)
+Files                  : my_test_kit.gemspec (spec.name),
+                         Gemfile.lock (PATH section + DEPENDENCIES),
+                         lib/my_test_kit.rb (filename),
+                         lib/my_test_kit/ (directory name),
+                         lib/my_test_kit/version.rb (filename),
+                         lib/my_test_kit/igs/ (directory name),
+                         Makefile (rm_generated, ber_generate, lint_generated, clean_generated),
+                         compose.yaml (validator-api volume mount),
+                         Dockerfile (ADD path for version.rb),
+                         config.json (package_archive_path, path_to_extractor)
+
+Placeholder            : MyTestKit
+Represents             : Ruby module name (CamelCase)
+Files                  : lib/my_test_kit/version.rb (module MyTestKit),
+                         my_test_kit.gemspec (SmartHealthChecksTestKit → MyTestKit::VERSION)
+
+Placeholder            : my_test_kit:generate
+Represents             : Rake task namespace used in Makefile and Rakefile
+Files                  : Makefile (ber_generate variable),
+                         Rakefile (namespace :my_test_kit)
+
+----------------------------------------------------------------
+GEM METADATA (my_test_kit.gemspec)
+----------------------------------------------------------------
+Placeholder            : Author Name
+Represents             : Author full name (spec.authors)
+
+Placeholder            : author@example.com
+Represents             : Author email (spec.email)
+
+Placeholder            : Inferno test kit
+Represents             : Short gem summary and description (spec.summary, spec.description)
+
+Placeholder            : https://github.com/example/my-test-kit
+Represents             : Repository homepage URL (spec.homepage,
+                         spec.metadata['homepage_uri'],
+                         spec.metadata['source_code_uri'])
+
+----------------------------------------------------------------
+IMPLEMENTATION GUIDE (config.json → "ig")
+----------------------------------------------------------------
+Placeholder            : example.fhir.ig.id
+Represents             : IG package ID (e.g. "hl7.fhir.au.core")
+
+Placeholder            : My Implementation Guide
+Represents             : Human-readable IG name
+
+Placeholder            : 0.1.0
+Represents             : IG version (also appears in package_archive_path and rewrite_igs)
+
+Placeholder            : https://example.com/ig/0.1.0/index.html
+Represents             : IG version-specific link
+
+Placeholder            : lib/my_test_kit/igs/0.1.0.tgz
+Represents             : Local path to the IG package archive (config.json → ig.package_archive_path)
+
+Placeholder            : https://example.com/ig/CapabilityStatement/MyCapabilityStatement
+Represents             : CapabilityStatement profile URL — appears twice:
+                         ig.cs_profile_url and ig.cs_version_specific_url
+
+----------------------------------------------------------------
+TEST SUITE (config.json → "suite")
+----------------------------------------------------------------
+Placeholder            : My Test Suite
+Represents             : Suite display title shown in the Inferno UI
+
+Placeholder            : /home/igs/0.1.0.tgz
+Represents             : In-container path for IG rewrite (suite.rewrite_igs)
+
+Placeholder            : https://tx.fhir.org/r4
+Represents             : Terminology server URL (suite.tx_server_url)
+
+Placeholder            : my_test_kit_teardown
+Represents             : Teardown outer group ID (suite.outer_groups[0].group_id)
+
+Placeholder            : https://github.com/example/my-test-kit/issues
+Represents             : "Report Issue" link in suite UI (suite.links)
+
+Placeholder            : https://github.com/example/my-test-kit
+Represents             : "Source Code" link in suite UI (suite.links)
+
+Placeholder            : https://example.com/ig/index.html
+Represents             : "Implementation Guide" link in suite UI (suite.links)
+
+----------------------------------------------------------------
+RUNTIME CONSTANTS (config.json → "constants")
+----------------------------------------------------------------
+Placeholder            : https://example.com/fhir
+Represents             : Default FHIR server URL pre-filled in the UI
+
+Placeholder            : example-patient-id
+Represents             : Pre-filled Patient resource ID for read tests
+
+Placeholder            : example-encounter-id
+Represents             : Pre-filled Encounter resource ID for read tests
+
+Placeholder            : example-practitioner-id
+Represents             : Pre-filled Practitioner resource ID for read tests
+
+----------------------------------------------------------------
+PROFILE CONFIGURATION (config.json → "configs.profiles")
+----------------------------------------------------------------
+Placeholder            : https://example.com/ig/StructureDefinition/MyProfile
+Represents             : A profile URL key — replace with your IG's actual StructureDefinition URLs.
+                         Each profile entry can carry: keep_all_search_results, filter_set,
+                         first_class_profile, search_param, register_extractors,
+                         exclude_elements_from_must_support, slice_discriminator_default_value.
+                         Add one entry per profile defined in your IG.

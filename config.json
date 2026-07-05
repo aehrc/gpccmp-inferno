@@ -1,0 +1,56 @@
+{
+  "ig": {
+    "id": "csiro.fhir.au.gpccmp",
+    "name": "GP CCMP",
+    "version": "0.1.0-ci-build",
+    "link": "https://gpccmp.csiro.au/ig/ImplementationGuide/csiro.fhir.au.gpccmp",
+    "package_archive_path": "lib/gpccmp_test_kit/igs/0.1.0-ci-build.tgz",
+    "cs_profile_url": "https://gpccmp.csiro.au/ig/CapabilityStatement/GPCCMPServerCapabilityStatement",
+    "cs_version_specific_url": "https://gpccmp.csiro.au/ig/CapabilityStatement/csiro.fhir.au.gpccmp"
+  },
+  "suite": {
+    "title": "GP CCMP",
+    "rewrite_igs": "/home/igs/0.1.0-ci-build.tgz",
+    "extra_json_paths": [
+      "search-params.json"
+    ],
+    "tx_server_url": "https://tx.fhir.org/r4",
+    "extra_imports": [],
+    "outer_groups": [],
+    "links": [
+      {
+        "label": "Report Issue",
+        "url": "https://github.com/aehrc/gpccmp-inferno/issues"
+      },
+      {
+        "label": "Source Code",
+        "url": "https://github.com/aehrc/gpccmp-inferno"
+      },
+      {
+        "label": "Implementation Guide",
+        "url": "https://gpccmp.csiro.au/ig/ImplementationGuide/csiro.fhir.au.gpccmp"
+      }
+    ]
+  },
+  "constants": {
+    "default_fhir_server": "",
+    "read_ids.patient": "",
+    "read_ids.practitioner": "",
+    "read_ids.organization": "",
+    "read_ids.practitioner_role": ""
+  },
+  "configs": {
+    "generic": {
+      "expectation": [
+        "SHALL",
+        "SHOULD",
+        "MAY"
+      ],
+      "search_params_to_ignore": [
+        "_count",
+        "_sort",
+        "_include"
+      ]
+    }
+  }
+}
