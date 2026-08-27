@@ -8,19 +8,9 @@ Runs a suite of conformance tests against a FHIR server to check that it correct
 
 ## Hosted instance
 
-A hosted instance of this test kit runs at
-**<https://inferno.smartforms.io>**, alongside the Smart Health Checks kit,
-served by the platform in
-[aehrc/smart-forms-inferno-platform](https://github.com/aehrc/smart-forms-inferno-platform).
-Test results there persist across deploys and restarts. The older
-`gpccmp-inferno-test.smartforms.io` address still resolves to the same
-instance.
+A hosted instance of this test kit runs at **<https://inferno.smartforms.io>**, alongside the Smart Health Checks kit, served by the platform in [aehrc/smart-forms-inferno-platform](https://github.com/aehrc/smart-forms-inferno-platform). Test results there persist across deploys and restarts. The older `gpccmp-inferno-test.smartforms.io` address still resolves to the same instance.
 
-**Pushing to `main` here does not deploy anything.** The platform consumes this
-repository as a gem pinned to a git ref, so a change reaches the hosted
-instance only when that ref is bumped in the platform's `Gemfile`. The EC2 VM
-that used to poll this repository every three minutes and rebuild itself was
-decommissioned on 2026-08-27.
+**Pushing to `main` here does not deploy anything.** The platform consumes this repository as a gem pinned to a git ref, so a change reaches the hosted instance only when that ref is bumped in the platform's `Gemfile`. The EC2 VM that used to poll this repository every three minutes and rebuild itself was decommissioned on 2026-08-27.
 
 The rest of this README covers running the kit locally.
 
