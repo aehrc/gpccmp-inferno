@@ -3,6 +3,9 @@
 require 'base64'
 require 'inferno/dsl/oauth_credentials'
 require 'inferno_suite_generator/utils/helpers'
+require 'inferno_suite_generator/utils/fhirpath_lab_message_linker'
+require 'inferno_suite_generator/utils/resource_keeper_endpoints'
+require 'inferno_suite_generator/utils/validation_message_overrides'
 require_relative '../../version'
 require_relative '../../outer_groups/teardown'
 
@@ -36,11 +39,28 @@ module GPCCMPTestKit
         HL7® FHIR® resources are validated with the Java validator using
         https://tx.fhir.org/r4 as the terminology server.
 
-        The test suite is generated using the [InfernoSuiteGenerator](https://github.com/hl7au/inferno_suite_generator) gem version 0.1.1.
+        The test suite is generated using the [InfernoSuiteGenerator](https://github.com/hl7au/inferno_suite_generator) gem version 0.1.0.
       )
       version VERSION
 
+      # `id` MUST be declared before `fhir_resource_validator`. The validator captures the
+      # suite id eagerly as its `test_suite_id`, and Inferno keys validator sessions on it.
+      # If `id` comes after, the capture falls back to the base-class name
+      # "Inferno::Entities::TestSuite", which every affected suite then shares as a single
+      # validator session, collapsing separate IG versions onto one validator engine and
+      # causing intermittent "Unable to resolve profile ...|<version>" errors.
+      id :gpccmp_v010_ci_build
+
       VERSION_SPECIFIC_MESSAGE_FILTERS = [].freeze
+
+      VALIDATION_MESSAGE_OVERRIDES = [].freeze
+
+      FHIRPATHLAB_URL = 'https://fhirpath-lab.com/FhirPath'
+
+      suite_endpoint :get, '/resources/:session_id/:resource_type/:resource_id',
+                     InfernoSuiteGenerator::FetchResourceEndpoint
+      suite_endpoint :delete, '/resources/:session_id',
+                     InfernoSuiteGenerator::DeleteSessionResourcesEndpoint
 
       def self.metadata
         @metadata ||= YAML.load_file(File.join(__dir__, 'metadata.yml'), aliases: true)[:groups].map do |raw_metadata|
@@ -49,6 +69,9 @@ module GPCCMPTestKit
       end
 
       fhir_resource_validator do
+        extend InfernoSuiteGenerator::ValidationMessageOverrides
+        message_overrides VALIDATION_MESSAGE_OVERRIDES
+
         igs '/home/igs/0.1.0-ci-build.tgz'
         message_filters = [
           "The value provided ('xml') was not found in the value set 'MimeType'",
@@ -58,6 +81,7 @@ module GPCCMPTestKit
 
         cli_context do
           txServer ENV.fetch('TX_SERVER_URL', 'https://tx.fhir.org/r4')
+          snomedCT ENV.fetch('SNOMED_EDITION', 'au')
           disableDefaultResourceFetcher false
         end
 
@@ -84,8 +108,6 @@ module GPCCMPTestKit
           url: 'https://gpccmp.csiro.au/ig/ImplementationGuide/csiro.fhir.au.gpccmp'
         }
       ]
-
-      id :gpccmp_v010_ci_build
 
       input :url,
             title: 'FHIR Endpoint',

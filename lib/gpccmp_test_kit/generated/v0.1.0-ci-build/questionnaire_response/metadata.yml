@@ -19,6 +19,8 @@
   :expectation: SHALL
 - :code: update
   :expectation: SHALL
+:update_create: false
+:update_create_expectation: MAY
 :operations: []
 :searches:
 - :names:
@@ -154,8 +156,6 @@
   :file_name: questionnaire_response_create_test.rb
 - :id: gpccmp_v010_ci_build_questionnaire_response_update_update_test
   :file_name: questionnaire_response_update_update_test.rb
-- :id: gpccmp_v010_ci_build_questionnaire_response_update_new_update_test
-  :file_name: questionnaire_response_new_update_update_test.rb
 :id: gpccmp_v010_ci_build_questionnaire_response
 :file_name: questionnaire_response_group.rb
 :delayed_references: []

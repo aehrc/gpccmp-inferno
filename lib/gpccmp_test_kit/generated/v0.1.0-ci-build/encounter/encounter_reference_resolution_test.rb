@@ -42,7 +42,12 @@ module GPCCMPTestKit
       end
 
       run do
-        perform_reference_resolution_test(scratch_resources[:all], {})
+        perform_reference_resolution_test(
+          scratch_resources[:all],
+          {},
+          %w[Encounter Location Medication Patient Practitioner PractitionerRole
+             QuestionnaireResponse]
+        )
       end
     end
   end

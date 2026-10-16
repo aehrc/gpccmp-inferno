@@ -10,7 +10,6 @@ require_relative 'questionnaire_response/questionnaire_response_must_support_tes
 require_relative 'questionnaire_response/questionnaire_response_reference_resolution_test'
 require_relative 'questionnaire_response/questionnaire_response_create_test'
 require_relative 'questionnaire_response/questionnaire_response_update_update_test'
-require_relative 'questionnaire_response/questionnaire_response_new_update_update_test'
 
 module GPCCMPTestKit
   module GPCCMPV010_CI_BUILD
@@ -89,7 +88,6 @@ read succeeds.
       test from: :gpccmp_v010_ci_build_questionnaire_response_reference_resolution_test
       test from: :gpccmp_v010_ci_build_questionnaire_response_create_test
       test from: :gpccmp_v010_ci_build_questionnaire_response_update_update_test
-      test from: :gpccmp_v010_ci_build_questionnaire_response_update_new_update_test
     end
   end
 end
