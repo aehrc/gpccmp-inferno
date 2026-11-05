@@ -1,0 +1,3 @@
+[submodule "gpccmp-fhir-ig"]
+	path = gpccmp-fhir-ig
+	url = git@github.com:aehrc/gpccmp-fhir-ig.git
