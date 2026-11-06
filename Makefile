@@ -7,20 +7,24 @@ endif
 inferno = run inferno
 rm_generated = rm -rf lib/gpccmp_test_kit/generated/
 ber_generate = bundle exec rake gpccmp_test_kit:generate
-lint_generated = rubocop -A lib/gpccmp_test_kit/
+lint_generated = bundle exec rubocop -A --fail-level E lib/gpccmp_test_kit/
+IG_REF ?=
 
-.PHONY: setup generate summary new_release tests run pull build up stop down rubocop migrate clean_generated uploadfig_generate_local
+.PHONY: setup generate regenerate summary tests run pull build up stop down rubocop migrate clean_generated uploadfig_generate_local
 
 setup: pull build migrate
 
 generate:
 	if [ "$(MODE)" = "local" ]; then \
-		$(ber_generate); \
+		$(ber_generate) && \
 		$(lint_generated); \
 	else \
-		$(compose) $(inferno) $(ber_generate); \
+		$(compose) $(inferno) $(ber_generate) && \
 		$(compose) $(inferno) $(lint_generated); \
 	fi
+
+regenerate:
+	MODE=$(MODE) IG_REF=$(IG_REF) ./bin/regenerate.sh
 
 tests:
 	$(compose) run -e APP_ENV=test inferno bundle exec rspec

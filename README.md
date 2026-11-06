@@ -38,6 +38,19 @@ make stop    # stop services
 make down    # stop and remove containers
 ```
 
+## Regenerate the suite
+
+The IG sources are the `gpccmp-fhir-ig` submodule (`git submodule update --init`). The suite is generated from an IG archive built from that submodule:
+
+```bash
+make regenerate                 # rebuild the pinned IG commit and regenerate the suite
+make regenerate IG_REF=master   # move the submodule to the latest IG master first
+```
+
+Add `MODE=local` to generate with local Ruby instead of Docker. The IG itself is always built in Docker. When the IG's version changes, the new version's archive and suite replace the old ones, and `config.json`, `lib/gpccmp_test_kit.rb` and the outer groups are updated to match.
+
+The **Regenerate Suite** workflow runs `make regenerate IG_REF=master` from the Actions tab. If anything changed, it opens a pull request on branch `suite-for-<version>` for a new IG version, or `suite-changed-for-<version>-at-<datetime>` otherwise.
+
 ## Usage
 
 1. Open the Inferno web UI.
