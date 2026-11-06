@@ -1,44 +1,44 @@
 name: Publish Gem
+
+# Publishes the gem to RubyGems when a GitHub release is published. The release tag
+# must be v<version> for the version the gemspec declares. Signs in with RubyGems
+# trusted publishing (OIDC), so no API key is stored; the gem's trusted publisher on
+# rubygems.org must name this repository and this workflow file.
 on:
   release:
     types: [published]
-  workflow_dispatch:
+
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
       contents: read
+      id-token: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Set up Ruby 3.3.6
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.6
-      # Guard against version drift: a release tag must match lib/.../version.rb so we
-      # never publish (or tag) a version that doesn't match the code.
-      - name: Verify tag matches gem version
-        if: github.event_name == 'release'
+
+      - name: Verify the release tag matches the gemspec version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
         run: |
-          GEM_VERSION="v$(ruby -r ./lib/au_core_test_kit/version -e 'print AUCoreTestKit::VERSION')"
-          echo "Release tag: ${{ github.ref_name }} | gem version: ${GEM_VERSION}"
-          if [ "${GEM_VERSION}" != "${{ github.ref_name }}" ]; then
-            echo "::error::Release tag ${{ github.ref_name }} does not match gem version ${GEM_VERSION} (lib/au_core_test_kit/version.rb)"
+          VERSION="$(ruby -e 'print Gem::Specification.load(Dir["*.gemspec"].first).version')"
+          echo "Release tag: ${TAG} | gemspec version: ${VERSION}"
+          if [ "${TAG}" != "v${VERSION}" ]; then
+            echo "::error::Release tag ${TAG} does not match the gemspec version (expected v${VERSION})"
             exit 1
           fi
-      - name: Install dependencies
-        run: bundle install
-      - name: Configure RubyGems credentials
-        env:
-          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMSKEY }}
-        run: |
-          mkdir -p ~/.gem
-          echo "---" > ~/.gem/credentials
-          echo ":rubygems_api_key: ${RUBYGEMS_API_KEY}" >> ~/.gem/credentials
-          chmod 0600 ~/.gem/credentials
+
       - name: Build gem
         run: gem build *.gemspec
+
+      - name: Configure RubyGems trusted publishing credentials
+        uses: rubygems/configure-rubygems-credentials@v2.1.0
+
       - name: Push to RubyGems
-        run: |
-          gem push *.gem
+        run: gem push *.gem
