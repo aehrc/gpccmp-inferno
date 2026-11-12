@@ -7,8 +7,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Setup environment
-        run: make setup
+      # Lint and specs need only the inferno image, which the first run builds.
       - name: Run RuboCop
         run: make rubocop
       - name: Run Spec

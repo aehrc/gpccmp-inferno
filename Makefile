@@ -15,10 +15,17 @@ else
 $(error Unknown STACK "$(STACK)": use default or aidbox)
 endif
 
+# ruby runs a Ruby command; ruby_db runs one that needs the database.
 ifeq ($(RUNNER), docker)
-ruby = $(compose) run inferno
+# A one-off inferno container: removed afterwards, and running as the calling user so
+# the files it writes into the checkout are not owned by root. HOME must be writable.
+docker_run = $(compose) run --rm --user $$(id -u):$$(id -g) -e HOME=/tmp
+# Lint, specs and generation need no other service, so none is started.
+ruby = $(docker_run) --no-deps inferno
+ruby_db = $(docker_run) inferno
 else ifeq ($(RUNNER), local)
 ruby =
+ruby_db =
 else
 $(error Unknown RUNNER "$(RUNNER)": use docker or local)
 endif
@@ -32,7 +39,7 @@ IG_REF ?=
 setup:
 	$(compose) pull
 	$(compose) build
-	$(ruby) bundle exec rake db:migrate
+	$(ruby_db) bundle exec rake db:migrate
 
 # Build and start all services.
 run:
@@ -68,7 +75,7 @@ generate:
 regenerate:
 	IG_REF=$(IG_REF) RUBY_PREFIX="$(ruby)" ./bin/regenerate.sh
 
-# Discard the generated suite; sudo because the container writes it as root on Linux.
+# Discard the generated suite and restore it from git.
 clean_generated:
-	sudo rm -rf $(generated_dir)
+	rm -rf $(generated_dir)
 	git checkout $(generated_dir)
