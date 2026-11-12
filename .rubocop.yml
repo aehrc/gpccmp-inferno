@@ -10,8 +10,6 @@ AllCops:
   SuggestExtensions: false
   Exclude:
     - "gpccmp-fhir-ig/**/*"
-    # Template scaffolding, not part of the kit.
-    - "bin/wizard"
 
 # The generator namespaces a suite by its IG version (GPCCMPV010_CI_BUILD); the outer
 # groups share that namespace.
