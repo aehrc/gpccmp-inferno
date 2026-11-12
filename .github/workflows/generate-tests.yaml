@@ -32,7 +32,7 @@ jobs:
 
       - name: Regenerate the suite from the latest IG master
         id: regenerate
-        run: make regenerate IG_REF=master MODE=local
+        run: make regenerate IG_REF=master RUNNER=local
 
       - name: Prepare the pull request
         id: pr

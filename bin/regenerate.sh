@@ -19,7 +19,8 @@
 # Usage:
 #   ./bin/regenerate.sh                 rebuild the pinned IG commit
 #   IG_REF=master ./bin/regenerate.sh   move the submodule to a ref first
-#   MODE=local ./bin/regenerate.sh      generate with local Ruby instead of Docker
+#   RUNNER=local ./bin/regenerate.sh    generate with local Ruby instead of Docker
+# RUNNER and STACK reach `make generate` through the environment; see the Makefile.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -32,7 +33,6 @@ OUTER_GROUPS_DIR="lib/gpccmp_test_kit/outer_groups"
 ENTRY_FILE="lib/gpccmp_test_kit.rb"
 CONFIG_FILE="config.json"
 IG_REF="${IG_REF:-}"
-MODE="${MODE:-default}"
 
 if [ ! -f "${IG_SUBMODULE}/sushi-config.yaml" ]; then
   echo "IG sources not found in ${IG_SUBMODULE}. Run: git submodule update --init" >&2
@@ -74,7 +74,7 @@ else
   STATUS=""
 fi
 
-make --no-print-directory generate MODE="${MODE}"
+make --no-print-directory generate
 
 if [ -z "${STATUS}" ]; then
   if ! git diff --quiet --ignore-submodules=dirty HEAD -- "${IG_SUBMODULE}" \

@@ -28,7 +28,7 @@ make run     # build and start all services
 
 The Inferno web UI is then available at [http://localhost](http://localhost).
 
-To use Aidbox instead of the default validator stack, add `MODE=aidbox` to each `make` command.
+To use Aidbox instead of the default validator stack, add `STACK=aidbox` to each `make` command.
 
 Other useful targets:
 
@@ -47,7 +47,7 @@ make regenerate                 # rebuild the pinned IG commit and regenerate th
 make regenerate IG_REF=master   # move the submodule to the latest IG master first
 ```
 
-Add `MODE=local` to generate with local Ruby instead of Docker. The IG itself is always built in Docker. When the IG's version changes, the new version's archive and suite replace the old ones, and `config.json`, `lib/gpccmp_test_kit.rb` and the outer groups are updated to match.
+Add `RUNNER=local` to generate with local Ruby instead of Docker; the same flag works for `make tests`, `make rubocop` and `make migrate`. The IG itself is always built in Docker. When the IG's version changes, the new version's archive and suite replace the old ones, and `config.json`, `lib/gpccmp_test_kit.rb` and the outer groups are updated to match.
 
 The **Regenerate Suite** workflow runs `make regenerate IG_REF=master` from the Actions tab. If anything changed, it opens a pull request on branch `suite-for-<version>` for a new IG version, or `suite-changed-for-<version>-at-<datetime>` otherwise.
 
