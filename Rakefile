@@ -20,10 +20,11 @@ namespace :db do
 end
 
 namespace :gpccmp_test_kit do
-  desc 'Generate tests'
+  desc 'Generate the suite from config.json and autocorrect the result'
   task :generate do
     require 'inferno_suite_generator'
 
     InfernoSuiteGenerator::Generator.generate(['./config.json'])
+    sh 'rubocop', '-A', '--fail-level', 'E', 'lib/gpccmp_test_kit/'
   end
 end

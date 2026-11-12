@@ -28,15 +28,32 @@ make run     # build and start all services
 
 The Inferno web UI is then available at [http://localhost](http://localhost).
 
-To use Aidbox instead of the default validator stack, add `MODE=aidbox` to each `make` command.
+To use Aidbox instead of the default validator stack, add `STACK=aidbox` to each `make` command. `compose.aidbox.yaml` is an override on top of `compose.yaml` and holds only the validator services.
 
-Other useful targets:
+Other targets:
 
 ```bash
-make tests   # run the test kit's own test suite
-make stop    # stop services
-make down    # stop and remove containers
+make tests            # run the test kit's own test suite
+make rubocop          # lint; make rubocop-fix autocorrects
+make generate         # generate the suite from the IG archive config.json points at
+make stop             # stop services
+make down             # stop and remove containers
+make reset            # remove containers AND volumes (database, redis), then setup and run
+make clean_generated  # discard the generated suite and restore it from git
 ```
+
+## Regenerate the suite
+
+The IG sources are the `gpccmp-fhir-ig` submodule (`git submodule update --init`). The suite is generated from an IG archive built from that submodule:
+
+```bash
+make regenerate                 # rebuild the pinned IG commit and regenerate the suite
+make regenerate IG_REF=master   # move the submodule to the latest IG master first
+```
+
+Add `RUNNER=local` to generate with local Ruby instead of Docker; the same flag works for `make tests`, `make rubocop` and `make generate`. The IG itself is always built in Docker. When the IG's version changes, the new version's archive and suite replace the old ones, and `bin/switch_ig_version.sh` updates the three files that name the version: `config.json`, `lib/gpccmp_test_kit.rb` and the Aidbox init bundle.
+
+The **Regenerate Suite** workflow runs `make regenerate IG_REF=master` from the Actions tab. If anything changed, it opens a pull request on branch `suite-for-<version>` for a new IG version, or `suite-changed-for-<version>-at-<datetime>` otherwise.
 
 ## Usage
 

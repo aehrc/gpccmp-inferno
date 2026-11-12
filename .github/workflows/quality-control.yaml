@@ -1,0 +1,14 @@
+name: Automated Quality Control
+on: push
+jobs:
+  Spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # Lint and specs need only the inferno image, which the first run builds.
+      - name: Run RuboCop
+        run: make rubocop
+      - name: Run Spec
+        run: make tests

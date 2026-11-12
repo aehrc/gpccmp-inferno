@@ -1,39 +1,49 @@
-MODE ?= default
-ifeq ($(MODE), default)
-compose = docker compose
-else ifeq ($(MODE), aidbox)
-compose = docker compose -f compose.aidbox.yaml
+# STACK picks the compose stack: default | aidbox
+# RUNNER picks where Ruby commands run: docker (the inferno container) | local (host Ruby)
+STACK ?= default
+RUNNER ?= docker
+
+ifneq ($(origin MODE), undefined)
+$(error MODE was split in two: use STACK=aidbox for the Aidbox stack, RUNNER=local for local Ruby)
 endif
-inferno = run inferno
-rm_generated = rm -rf lib/gpccmp_test_kit/generated/
-ber_generate = bundle exec rake gpccmp_test_kit:generate
-lint_generated = rubocop -A lib/gpccmp_test_kit/
 
-.PHONY: setup generate summary new_release tests run pull build up stop down rubocop migrate clean_generated uploadfig_generate_local
+ifeq ($(STACK), default)
+compose = docker compose
+else ifeq ($(STACK), aidbox)
+compose = docker compose -f compose.yaml -f compose.aidbox.yaml
+else
+$(error Unknown STACK "$(STACK)": use default or aidbox)
+endif
 
-setup: pull build migrate
+# ruby runs a Ruby command; ruby_db runs one that needs the database.
+ifeq ($(RUNNER), docker)
+# A one-off inferno container: removed afterwards, and running as the calling user so
+# the files it writes into the checkout are not owned by root. HOME must be writable.
+docker_run = $(compose) run --rm --user $$(id -u):$$(id -g) -e HOME=/tmp
+# Lint, specs and generation need no other service, so none is started.
+ruby = $(docker_run) --no-deps inferno
+ruby_db = $(docker_run) inferno
+else ifeq ($(RUNNER), local)
+ruby =
+ruby_db =
+else
+$(error Unknown RUNNER "$(RUNNER)": use docker or local)
+endif
 
-generate:
-	if [ "$(MODE)" = "local" ]; then \
-		$(ber_generate); \
-		$(lint_generated); \
-	else \
-		$(compose) $(inferno) $(ber_generate); \
-		$(compose) $(inferno) $(lint_generated); \
-	fi
+generated_dir = lib/gpccmp_test_kit/generated/
+IG_REF ?=
 
-tests:
-	$(compose) run -e APP_ENV=test inferno bundle exec rspec
+.PHONY: setup run stop down reset tests rubocop rubocop-fix generate regenerate clean_generated
 
-run: build up
-
-pull:
+# Pull images, build, and migrate the database.
+setup:
 	$(compose) pull
-
-build:
 	$(compose) build
+	$(ruby_db) bundle exec rake db:migrate
 
-up:
+# Build and start all services.
+run:
+	$(compose) build
 	$(compose) up
 
 stop:
@@ -42,19 +52,30 @@ stop:
 down:
 	$(compose) down
 
+# Start from zero: removes the containers AND their volumes (database, redis), then sets up and runs.
+reset:
+	$(compose) down --volumes
+	$(MAKE) setup
+	$(MAKE) run
+
+tests:
+	$(ruby) env APP_ENV=test bundle exec rspec
+
 rubocop:
-	$(compose) $(inferno) rubocop
+	$(ruby) bundle exec rubocop
 
 rubocop-fix:
-	$(compose) $(inferno) rubocop -A
+	$(ruby) bundle exec rubocop -A
 
-migrate:
-	$(compose) $(inferno) bundle exec rake db:migrate
+# Generate the suite from the IG archive config.json points at, and autocorrect it.
+generate:
+	$(ruby) bundle exec rake gpccmp_test_kit:generate
 
+# Rebuild the IG from the submodule and regenerate the suite; see bin/regenerate.sh.
+regenerate:
+	IG_REF=$(IG_REF) RUBY_PREFIX="$(ruby)" ./bin/regenerate.sh
+
+# Discard the generated suite and restore it from git.
 clean_generated:
-	sudo $(rm_generated)
-	git checkout lib/gpccmp_test_kit/generated/
-
-start_from_zero: stop down setup run
-
-full_develop_restart: stop down generate setup run
+	rm -rf $(generated_dir)
+	git checkout $(generated_dir)

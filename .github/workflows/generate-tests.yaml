@@ -1,0 +1,127 @@
+name: Regenerate Suite
+
+# Builds the IG from the latest gpccmp-fhir-ig master, regenerates the suite with
+# `make regenerate` and, if anything changed, opens a pull request:
+#   suite-for-<version>                       a new IG version replaces the old suite
+#   suite-changed-for-<version>-at-<datetime> the same IG version produced a different suite
+# Earlier automated pull requests are left open and linked from the new one.
+on: workflow_dispatch
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: regenerate-suite
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.6
+          bundler-cache: true
+
+      - name: Regenerate the suite from the latest IG master
+        id: regenerate
+        run: make regenerate IG_REF=master RUNNER=local
+
+      - name: Prepare the pull request
+        id: pr
+        if: steps.regenerate.outputs.status != 'unchanged'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATUS: ${{ steps.regenerate.outputs.status }}
+          VERSION: ${{ steps.regenerate.outputs.version }}
+          PREVIOUS_VERSION: ${{ steps.regenerate.outputs.previous_version }}
+          IG_COMMIT: ${{ steps.regenerate.outputs.ig_commit }}
+          PREVIOUS_IG_COMMIT: ${{ steps.regenerate.outputs.previous_ig_commit }}
+        run: |
+          IG_REPO="https://github.com/aehrc/gpccmp-fhir-ig"
+          if [ "${STATUS}" = "new" ]; then
+            BRANCH="suite-for-${VERSION}"
+            TITLE="Generate the suite for GPCCMP IG ${VERSION}"
+          else
+            BRANCH="suite-changed-for-${VERSION}-at-$(date -u +%Y%m%d-%H%M)"
+            TITLE="Regenerate the suite for GPCCMP IG ${VERSION} from ${IG_COMMIT}"
+          fi
+          OPEN_PRS="$(gh pr list --repo "${GITHUB_REPOSITORY}" --label automated-pr --state open \
+            --json number,title,headRefName \
+            --jq ".[] | select(.headRefName != \"${BRANCH}\") | \"- #\(.number) \(.title)\"")"
+
+          BODY="${RUNNER_TEMP}/pr_body.md"
+          {
+            if [ "${STATUS}" = "new" ]; then
+              echo "Replaces the GPCCMP \`${PREVIOUS_VERSION}\` suite with \`${VERSION}\`, generated from"
+              echo "[gpccmp-fhir-ig@${IG_COMMIT}](${IG_REPO}/commit/${IG_COMMIT}) on master."
+              echo ""
+              echo "The suite id is derived from the IG version, so it changes with this PR."
+              echo "Anything that refers to the old suite id, such as the hosted platform, needs updating."
+            else
+              echo "Regenerates the GPCCMP \`${VERSION}\` suite from"
+              echo "[gpccmp-fhir-ig@${IG_COMMIT}](${IG_REPO}/commit/${IG_COMMIT}) on master."
+            fi
+            echo ""
+            if [ "${IG_COMMIT}" != "${PREVIOUS_IG_COMMIT}" ]; then
+              echo "IG changes: ${IG_REPO}/compare/${PREVIOUS_IG_COMMIT}...${IG_COMMIT}"
+              echo ""
+            fi
+            if [ -n "${OPEN_PRS}" ]; then
+              echo "Earlier automated pull requests still open:"
+              echo ""
+              echo "${OPEN_PRS}"
+              echo ""
+            fi
+            echo "If Automated Quality Control has not run on this PR, run \`make tests\` locally before merging."
+            echo ""
+            echo "Opened by the Regenerate Suite workflow: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > "${BODY}"
+
+          {
+            echo "branch=${BRANCH}"
+            echo "title=${TITLE}"
+            echo "body_path=${BODY}"
+          } >> "${GITHUB_OUTPUT}"
+
+      # A pull request pushed with GITHUB_TOKEN starts no workflows, so Automated Quality
+      # Control would never run on it. A token from the kit automation GitHub App does.
+      # Until the variable and secret exist, the step is skipped and GITHUB_TOKEN is used.
+      - name: Create a GitHub App token so checks run on the pull request
+        id: app-token
+        if: steps.regenerate.outputs.status != 'unchanged' && vars.KIT_AUTOMATION_APP_CLIENT_ID != ''
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.KIT_AUTOMATION_APP_CLIENT_ID }}
+          private-key: ${{ secrets.KIT_AUTOMATION_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Open the pull request
+        if: steps.regenerate.outputs.status != 'unchanged'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.pr.outputs.branch }}
+          base: main
+          delete-branch: true
+          # bundler-cache installs gems into vendor/bundle inside the checkout, which must
+          # never reach the PR.
+          add-paths: |
+            gpccmp-fhir-ig
+            config.json
+            lib/gpccmp_test_kit.rb
+            resources/init-bundles
+            lib/gpccmp_test_kit/igs
+            lib/gpccmp_test_kit/generated
+          commit-message: ${{ steps.pr.outputs.title }}
+          title: ${{ steps.pr.outputs.title }}
+          body-path: ${{ steps.pr.outputs.body_path }}
+          labels: automated-pr
