@@ -30,6 +30,19 @@ RSpec.describe 'the generated GPCCMP suite' do
     expect(File.basename(config.dig('suite', 'rewrite_igs'), '.tgz')).to eq(ig_version)
   end
 
+  it 'has Aidbox install the same IG archive' do
+    bundle = File.read(File.join(root, 'resources/init-bundles/gpccmp-package.json'))
+
+    expect(bundle).to include("file:///resources/ig/#{ig_version}.tgz")
+  end
+
+  it 'requires only the configured version\'s suite from the kit entry point' do
+    requires = File.readlines(File.join(root, 'lib/gpccmp_test_kit.rb')).grep(/require_relative/)
+
+    expect(requires.map(&:strip))
+      .to eq(["require_relative 'gpccmp_test_kit/generated/v#{ig_version}/gpccmp_test_suite'"])
+  end
+
   it 'holds exactly one generated suite, the one for the configured IG version' do
     generated = Dir.children(File.join(root, 'lib/gpccmp_test_kit/generated'))
 

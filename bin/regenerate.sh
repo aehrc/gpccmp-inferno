@@ -3,9 +3,9 @@
 # archive, generates the suite from it and lints the result.
 #
 # A build whose archive is not in HEAD's lib/gpccmp_test_kit/igs/ is a new
-# IG version: it replaces the previous archive and generated suite, and
-# config.json, lib/gpccmp_test_kit.rb and the outer groups are pointed at the new
-# version. The kit carries one suite, the one for the IG's master branch (the ci-build).
+# IG version: bin/switch_ig_version.sh points the kit at it and removes the previous
+# archive and generated suite. The kit carries one suite, the one for the IG's master
+# branch (the ci-build).
 #
 # Prints, and writes to $GITHUB_OUTPUT when set:
 #   status            new | changed | unchanged
@@ -32,8 +32,6 @@ cd "${ROOT_DIR}"
 IG_SUBMODULE="gpccmp-fhir-ig"
 IGS_DIR="lib/gpccmp_test_kit/igs"
 GENERATED_DIR="lib/gpccmp_test_kit/generated"
-OUTER_GROUPS_DIR="lib/gpccmp_test_kit/outer_groups"
-ENTRY_FILE="lib/gpccmp_test_kit.rb"
 CONFIG_FILE="config.json"
 IG_REF="${IG_REF:-}"
 
@@ -70,14 +68,7 @@ fi
 if ! git cat-file -e "HEAD:${ARCHIVE}" 2>/dev/null && [ "${VERSION}" != "${PREVIOUS_VERSION}" ]; then
   STATUS="new"
   echo "New IG version ${VERSION} replaces ${PREVIOUS_VERSION}"
-  rm -f "${IGS_DIR}/${PREVIOUS_VERSION}.tgz"
-  rm -rf "${GENERATED_DIR:?}/v${PREVIOUS_VERSION}"
-  OLD="${PREVIOUS_VERSION}" NEW="${VERSION}" perl -pi -e 's/\Q$ENV{OLD}\E/$ENV{NEW}/g' "${CONFIG_FILE}" "${ENTRY_FILE}"
-  # The generator namespaces a suite by its version (0.1.0-ci-build -> GPCCMPV010_CI_BUILD);
-  # the outer groups share that namespace.
-  OLD="${PREVIOUS_VERSION}" NEW="${VERSION}" perl -pi -e '
-    BEGIN { sub ns { my $v = uc shift; $v =~ s/\.//g; $v =~ s/-/_/g; "GPCCMPV$v" } }
-    s/\b\Q@{[ns($ENV{OLD})]}\E\b/@{[ns($ENV{NEW})]}/g' "${OUTER_GROUPS_DIR}"/*.rb
+  ./bin/switch_ig_version.sh "${PREVIOUS_VERSION}" "${VERSION}"
 else
   STATUS=""
 fi

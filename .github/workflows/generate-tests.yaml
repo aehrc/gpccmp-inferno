@@ -118,8 +118,8 @@ jobs:
             gpccmp-fhir-ig
             config.json
             lib/gpccmp_test_kit.rb
+            resources/init-bundles
             lib/gpccmp_test_kit/igs
-            lib/gpccmp_test_kit/outer_groups
             lib/gpccmp_test_kit/generated
           commit-message: ${{ steps.pr.outputs.title }}
           title: ${{ steps.pr.outputs.title }}

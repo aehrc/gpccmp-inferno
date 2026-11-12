@@ -37,6 +37,8 @@ services:
     environment: !reset null
     volumes: !override
       - ./resources:/resources
+      # The init bundle installs the IG from here: the kit's own archive, not a copy.
+      - ./lib/gpccmp_test_kit/igs:/resources/ig
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:

@@ -11,12 +11,10 @@ AllCops:
   Exclude:
     - "gpccmp-fhir-ig/**/*"
 
-# The generator namespaces a suite by its IG version (GPCCMPV010_CI_BUILD); the outer
-# groups share that namespace.
+# The generator namespaces a suite by its IG version (GPCCMPV010_CI_BUILD).
 Naming/ClassAndModuleCamelCase:
   Exclude:
     - "lib/gpccmp_test_kit/generated/**/*"
-    - "lib/gpccmp_test_kit/outer_groups/**/*"
 
 Style/Documentation:
   Exclude:
