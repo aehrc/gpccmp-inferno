@@ -17,10 +17,13 @@
 # On "unchanged" the rebuilt archive is discarded, so the working tree is clean.
 #
 # Usage:
-#   ./bin/regenerate.sh                 rebuild the pinned IG commit
-#   IG_REF=master ./bin/regenerate.sh   move the submodule to a ref first
-#   RUNNER=local ./bin/regenerate.sh    generate with local Ruby instead of Docker
-# RUNNER and STACK reach `make generate` through the environment; see the Makefile.
+#   make regenerate                 rebuild the pinned IG commit
+#   make regenerate IG_REF=master   move the submodule to a ref first
+#   make regenerate RUNNER=local    generate with local Ruby instead of Docker
+#
+# Make supplies RUBY_PREFIX, the command that Ruby commands are run through: empty for
+# local Ruby, "docker compose run inferno" for the container. Called directly:
+#   RUBY_PREFIX= ./bin/regenerate.sh
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -33,6 +36,11 @@ OUTER_GROUPS_DIR="lib/gpccmp_test_kit/outer_groups"
 ENTRY_FILE="lib/gpccmp_test_kit.rb"
 CONFIG_FILE="config.json"
 IG_REF="${IG_REF:-}"
+
+if [ -z "${RUBY_PREFIX+set}" ]; then
+  echo "RUBY_PREFIX is not set. Run: make regenerate" >&2
+  exit 1
+fi
 
 if [ ! -f "${IG_SUBMODULE}/sushi-config.yaml" ]; then
   echo "IG sources not found in ${IG_SUBMODULE}. Run: git submodule update --init" >&2
@@ -51,11 +59,11 @@ if [ -z "${PREVIOUS_VERSION}" ]; then
   exit 1
 fi
 
-ARCHIVE_LINE="$(./bin/build_ig.sh | tee /dev/stderr | tail -n 1)"
-VERSION="$(basename "${ARCHIVE_LINE#IG archive: }" .tgz)"
+BUILT_ARCHIVE="$(./bin/build_ig.sh)"
+VERSION="$(basename "${BUILT_ARCHIVE}" .tgz)"
 ARCHIVE="${IGS_DIR}/${VERSION}.tgz"
 if [ ! -f "${ARCHIVE}" ]; then
-  echo "bin/build_ig.sh did not report an archive in ${IGS_DIR} (got: ${ARCHIVE_LINE})" >&2
+  echo "bin/build_ig.sh did not report an archive in ${IGS_DIR} (got: ${BUILT_ARCHIVE})" >&2
   exit 1
 fi
 
@@ -74,7 +82,8 @@ else
   STATUS=""
 fi
 
-make --no-print-directory generate
+# Unquoted on purpose: the prefix is a command with arguments, or nothing.
+${RUBY_PREFIX} bundle exec rake gpccmp_test_kit:generate
 
 if [ -z "${STATUS}" ]; then
   if ! git diff --quiet --ignore-submodules=dirty HEAD -- "${IG_SUBMODULE}" \

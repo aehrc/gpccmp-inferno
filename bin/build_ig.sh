@@ -9,6 +9,8 @@
 # it to pick up a newer release. FHIR packages are cached in ~/.fhir, the same
 # place a local IG Publisher run keeps them.
 #
+# Prints one line on stdout: the path of the archive. The build log goes to stderr.
+#
 # Usage:
 #   ./bin/build_ig.sh
 set -eu
@@ -43,7 +45,7 @@ docker run --rm \
       mv input-cache/publisher.jar.tmp input-cache/publisher.jar
     fi
     bash _genonce.sh
-  '
+  ' >&2
 
 # The publisher drops this into the IG root, which would mark the submodule dirty.
 rm -f "${IG_DIR}/Requirements-fromNarrative.json"
@@ -65,4 +67,4 @@ fi
 
 TARGET="${IGS_DIR}/${VERSION}-ci-build.tgz"
 mv -f "${ARCHIVE}" "${TARGET}"
-echo "IG archive: ${TARGET}"
+echo "${TARGET}"

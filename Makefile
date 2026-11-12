@@ -10,7 +10,7 @@ endif
 ifeq ($(STACK), default)
 compose = docker compose
 else ifeq ($(STACK), aidbox)
-compose = docker compose -f compose.aidbox.yaml
+compose = docker compose -f compose.yaml -f compose.aidbox.yaml
 else
 $(error Unknown STACK "$(STACK)": use default or aidbox)
 endif
@@ -23,34 +23,20 @@ else
 $(error Unknown RUNNER "$(RUNNER)": use docker or local)
 endif
 
-rm_generated = rm -rf lib/gpccmp_test_kit/generated/
-ber_generate = bundle exec rake gpccmp_test_kit:generate
-lint_generated = bundle exec rubocop -A --fail-level E lib/gpccmp_test_kit/
+generated_dir = lib/gpccmp_test_kit/generated/
 IG_REF ?=
 
-.PHONY: setup generate regenerate summary tests run pull build up stop down rubocop migrate clean_generated uploadfig_generate_local
+.PHONY: setup run stop down reset tests rubocop rubocop-fix generate regenerate clean_generated
 
-setup: pull build migrate
-
-generate:
-	$(ruby) $(ber_generate)
-	$(ruby) $(lint_generated)
-
-regenerate:
-	STACK=$(STACK) RUNNER=$(RUNNER) IG_REF=$(IG_REF) ./bin/regenerate.sh
-
-tests:
-	$(ruby) env APP_ENV=test bundle exec rspec
-
-run: build up
-
-pull:
+# Pull images, build, and migrate the database.
+setup:
 	$(compose) pull
-
-build:
 	$(compose) build
+	$(ruby) bundle exec rake db:migrate
 
-up:
+# Build and start all services.
+run:
+	$(compose) build
 	$(compose) up
 
 stop:
@@ -59,19 +45,30 @@ stop:
 down:
 	$(compose) down
 
+# Start from zero: removes the containers AND their volumes (database, redis), then sets up and runs.
+reset:
+	$(compose) down --volumes
+	$(MAKE) setup
+	$(MAKE) run
+
+tests:
+	$(ruby) env APP_ENV=test bundle exec rspec
+
 rubocop:
 	$(ruby) bundle exec rubocop
 
 rubocop-fix:
 	$(ruby) bundle exec rubocop -A
 
-migrate:
-	$(ruby) bundle exec rake db:migrate
+# Generate the suite from the IG archive config.json points at, and autocorrect it.
+generate:
+	$(ruby) bundle exec rake gpccmp_test_kit:generate
 
+# Rebuild the IG from the submodule and regenerate the suite; see bin/regenerate.sh.
+regenerate:
+	IG_REF=$(IG_REF) RUBY_PREFIX="$(ruby)" ./bin/regenerate.sh
+
+# Discard the generated suite; sudo because the container writes it as root on Linux.
 clean_generated:
-	sudo $(rm_generated)
-	git checkout lib/gpccmp_test_kit/generated/
-
-start_from_zero: stop down setup run
-
-full_develop_restart: stop down generate setup run
+	sudo rm -rf $(generated_dir)
+	git checkout $(generated_dir)
