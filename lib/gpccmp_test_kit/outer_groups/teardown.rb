@@ -5,6 +5,7 @@ require 'inferno_suite_generator/utils/references_keeper'
 
 module GPCCMPTestKit
   module GPCCMPV010_CI_BUILD
+    # Deletes the resources the suite created on the server under test.
     class TeardownGroup < Inferno::TestGroup
       SUCCESS_STATUSES = [200, 202, 204].freeze
 

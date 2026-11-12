@@ -1,0 +1,36 @@
+# The one lint standard for this kit: `make rubocop` (CI) and the autocorrect pass in
+# `rake gpccmp_test_kit:generate` both read it. Hand-written code follows RuboCop's
+# defaults; the exemptions below are for what the suite generator produces.
+inherit_mode:
+  merge:
+    - Exclude
+
+AllCops:
+  NewCops: disable
+  SuggestExtensions: false
+  Exclude:
+    - "gpccmp-fhir-ig/**/*"
+    # Template scaffolding, not part of the kit.
+    - "bin/wizard"
+
+# The generator namespaces a suite by its IG version (GPCCMPV010_CI_BUILD); the outer
+# groups share that namespace.
+Naming/ClassAndModuleCamelCase:
+  Exclude:
+    - "lib/gpccmp_test_kit/generated/**/*"
+    - "lib/gpccmp_test_kit/outer_groups/**/*"
+
+Style/Documentation:
+  Exclude:
+    - "lib/gpccmp_test_kit/generated/**/*"
+
+Layout/LineLength:
+  Exclude:
+    - "lib/gpccmp_test_kit/generated/**/*"
+
+# Inferno `test do … end` and RSpec blocks are as long as their content.
+Metrics/BlockLength:
+  AllowedMethods:
+    - test
+  Exclude:
+    - "spec/**/*"
