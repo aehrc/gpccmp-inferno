@@ -17,7 +17,7 @@ The rest of this README covers running the kit locally.
 ## Requirements
 
 - Docker and Docker Compose
-- Ruby 3.3.6 (only needed for local/non-Docker development)
+- Ruby 3.3.12 (only needed for local/non-Docker development)
 
 ## Run with Docker
 

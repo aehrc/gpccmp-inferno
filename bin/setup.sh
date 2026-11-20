@@ -7,7 +7,7 @@
 #   ./bin/setup.sh --dry-run  — preview changes without writing files
 set -e
 
-RUBY_IMAGE="ruby:3.3.6"
+RUBY_IMAGE="ruby:3.3.12"
 GEM_CACHE_VOLUME="inferno-suite-wizard-gems"
 
 exec docker run --rm -it \
